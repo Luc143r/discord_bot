@@ -26,10 +26,6 @@ class OnMessageCog(commands.Cog):
             role = discord.utils.get(guild.roles, name='Testing role')
             if role:
                 await user.add_roles(role)
-                print('Роль выдана')
-                await asyncio.sleep(60)
-                await user.remove_roles(role)
-                print('Роль спиздили')
             else:
                 print('Такой роли не существует')
 
