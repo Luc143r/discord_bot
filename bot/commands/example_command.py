@@ -13,7 +13,7 @@ class ExampleCommand(commands.Cog):
         await ctx.send('This is an example command!')
 
     @commands.command(name='embed')
-    async def send_embed(self, ctx, title: str, description: str):
+    async def send_embed(self, ctx, title: str, description: str, time: int):
         embed = discord.Embed(
             title=title,
             description=description,
@@ -25,7 +25,7 @@ class ExampleCommand(commands.Cog):
         for emoji in ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']:
             await self.message_embed.add_reaction(emoji)
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(time)
         updated_message = await self.message_embed.channel.fetch_message(self.message_embed.id)
         await self.remove_roles_from_all(updated_message)
 
@@ -57,10 +57,25 @@ class ExampleCommand(commands.Cog):
     @commands.command(name='edit_embed')
     async def edit_embed(self, ctx, new_title: str, new_description: str):
         updated_message = await self.message_embed.channel.fetch_message(self.message_embed.id)
+        await ctx.message.delete()
         embed = updated_message.embeds[0]
         embed.title = new_title
         embed.description = new_description
         await updated_message.edit(embed=embed)
+
+    @commands.command(name='create_voice')
+    async def create_voice_channel(self, ctx, channel_name: str, count_users: int):
+        guild = ctx.guild
+        voice_channel = await guild.create_voice_channel(channel_name, user_limit=count_users)
+        print('Voice created')
+        await ctx.message.reply('У вас есть 2 минуты, чтобы зайти в канал иначе он удалится')
+        await asyncio.sleep(5)
+        while voice_channel.members:
+            await asyncio.sleep(5)
+            print('В канале все еще кто-то есть')
+        else:
+            await voice_channel.delete()
+            print('Канал удален')
 
 
 async def setup(bot):
