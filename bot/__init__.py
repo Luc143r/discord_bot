@@ -4,6 +4,7 @@ from config.config import PREFIX
 
 
 intents = discord.Intents.all()
+intents.voice_states = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 

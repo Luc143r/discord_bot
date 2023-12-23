@@ -7,10 +7,8 @@ class ExampleCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.message_embed = None
+        self.user_voice_times = {}
 
-    @commands.command(name='hello')
-    async def hello_command(self, ctx):
-        await ctx.send('This is an example command!')
 
     @commands.command(name='embed')
     async def send_embed(self, ctx, title: str, description: str, time: int):
@@ -29,6 +27,7 @@ class ExampleCommand(commands.Cog):
         updated_message = await self.message_embed.channel.fetch_message(self.message_embed.id)
         await self.remove_roles_from_all(updated_message)
 
+
     async def remove_roles_from_all(self, message_embed):
         reaction_users = await self.get_reaction_users(message_embed)
         guild = message_embed.guild
@@ -44,6 +43,7 @@ class ExampleCommand(commands.Cog):
         else:
             print('Role not found')
 
+
     async def get_reaction_users(self, message_embed):
         updated_message = await message_embed.channel.fetch_message(message_embed.id)
         reaction_users = set()
@@ -53,7 +53,8 @@ class ExampleCommand(commands.Cog):
                 if user.id != self.bot.user.id:
                     reaction_users.add(user.id)
         return reaction_users
-        
+
+
     @commands.command(name='edit_embed')
     async def edit_embed(self, ctx, new_title: str, new_description: str):
         updated_message = await self.message_embed.channel.fetch_message(self.message_embed.id)
@@ -62,6 +63,7 @@ class ExampleCommand(commands.Cog):
         embed.title = new_title
         embed.description = new_description
         await updated_message.edit(embed=embed)
+
 
     @commands.command(name='create_voice')
     async def create_voice_channel(self, ctx, channel_name: str, count_users: int):
