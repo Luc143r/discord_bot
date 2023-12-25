@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
+from data import db
 
 
 class ExampleCommand(commands.Cog):
@@ -20,7 +21,7 @@ class ExampleCommand(commands.Cog):
         await ctx.message.delete()
         self.message_embed = await ctx.send(embed=embed)
 
-        for emoji in ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']:
+        for emoji in ['✅', '🚫', '⚠️', '❌', '♻️']:
             await self.message_embed.add_reaction(emoji)
 
         await asyncio.sleep(time)
@@ -29,25 +30,28 @@ class ExampleCommand(commands.Cog):
 
 
     async def remove_roles_from_all(self, message_embed):
-        reaction_users = await self.get_reaction_users(message_embed)
-        guild = message_embed.guild
-        role = discord.utils.get(guild.roles, name='Testing role')
-        if role:
-            for user_id in reaction_users:
-                member = guild.get_member(user_id)
-                if member:
-                    await member.remove_roles(role)
-                    print(f'Role {role.name} removed from {member.name}')
-                else:
-                    print(f'Member not found: {user_id}')
-        else:
-            print('Role not found')
+        roles = ['Готов', 'Не готов', 'Сомневающийся', 'Непригоден для ПБ', 'Ждать позже']
+        reaction_emoji = ['✅', '🚫', '⚠️', '❌', '♻️']
+        for name_role in range(len(roles)):
+            reaction_users = await self.get_reaction_users(message_embed, reaction_emoji[name_role])
+            guild = message_embed.guild
+            role = discord.utils.get(guild.roles, name=roles[name_role])
+            if role:
+                for user_id in reaction_users:
+                    member = guild.get_member(user_id)
+                    if member:
+                        await member.remove_roles(role)
+                        print(f'Role {role.name} removed from {member.name}')
+                    else:
+                        print(f'Member not found: {user_id}')
+            else:
+                print('Role not found')
 
 
-    async def get_reaction_users(self, message_embed):
+    async def get_reaction_users(self, message_embed, reaction_emoji: str):
         updated_message = await message_embed.channel.fetch_message(message_embed.id)
         reaction_users = set()
-        reaction = discord.utils.get(message_embed.reactions, emoji='1️⃣')
+        reaction = discord.utils.get(message_embed.reactions, emoji=reaction_emoji)
         if reaction:
             async for user in reaction.users():
                 if user.id != self.bot.user.id:
@@ -78,6 +82,31 @@ class ExampleCommand(commands.Cog):
         else:
             await voice_channel.delete()
             print('Канал удален')
+
+
+    @commands.command(name='top')
+    async def send_top_users(self, ctx):
+        top_users = db.select_top_users()
+        user_id = ctx.message.author.id
+        top_list = []
+        for user in range(len(top_users)):
+            top_list.append(f'{user+1}. {top_users[user][0]} - {top_users[user][1]} points')
+        #print('\n'.join(top_list))
+        top_list = '\n'.join(top_list)
+        await ctx.message.reply(top_list)
+
+
+    @commands.command(name='edit_points')
+    async def edit_points_user(self, ctx, username: str, points: int):
+        db.edit_user_points(username, points)
+        print(f'Points {username} edited')
+
+
+    '''@commands.command(name='test')
+    async def add_usr(self, ctx):
+        db.insert_user(123, 'lucifer', 20, 65)
+        db.insert_user(455, 'sanya', 100, 1)
+        db.insert_user(666, 'satan', 3, 0)'''
 
 
 async def setup(bot):

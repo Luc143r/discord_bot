@@ -50,3 +50,14 @@ class Database:
     @db_session
     def update_time_voice(self, user_id: int, time_voice: int, cursor: Cursor):
         cursor.execute('UPDATE Users SET time_voice = ? WHERE user_id = ?', (time_voice, user_id,))
+
+    @db_session
+    def select_top_users(self, cursor: Cursor):
+        cursor.execute('SELECT username, points FROM Users ORDER BY points DESC')
+        result = cursor.fetchall()
+        return result
+
+    @db_session
+    def edit_user_points(self, username: str, points: int, cursor: Cursor):
+        cursor.execute('UPDATE Users SET points = ? WHERE username = ?', (points, username,))
+
