@@ -21,7 +21,7 @@ class ExampleCommand(commands.Cog):
         await ctx.message.delete()
         self.message_embed = await ctx.send(embed=embed)
 
-        for emoji in ['✅', '🚫', '⚠️', '❌', '♻️']:
+        for emoji in ['<:stonk:1112096772190392320>', '<:notstonk:1112096776292413571>', '<:thonk:1112096769648631839>', '🕓', '❌']:
             await self.message_embed.add_reaction(emoji)
 
         await asyncio.sleep(time)
@@ -30,16 +30,20 @@ class ExampleCommand(commands.Cog):
 
 
     async def remove_roles_from_all(self, message_embed):
-        roles = ['Готов', 'Не готов', 'Сомневающийся', 'Непригоден для ПБ', 'Ждать позже']
-        reaction_emoji = ['✅', '🚫', '⚠️', '❌', '♻️']
+        roles = ['Готов', 'Не готов', 'Сомневающийся', 'Ждать позже']
+        reaction_emoji = ['<:stonk:1112096772190392320>', '<:notstonk:1112096776292413571>', '<:thonk:1112096769648631839>', '🕓']
         for name_role in range(len(roles)):
             reaction_users = await self.get_reaction_users(message_embed, reaction_emoji[name_role])
+            print(reaction_emoji)
             guild = message_embed.guild
             role = discord.utils.get(guild.roles, name=roles[name_role])
+            print(f"role befor remove: {role}")
             if role:
+                print(f"role after remove: {role}")
                 for user_id in reaction_users:
                     member = guild.get_member(user_id)
                     if member:
+                        print(member)
                         await member.remove_roles(role)
                         print(f'Role {role.name} removed from {member.name}')
                     else:
@@ -69,7 +73,7 @@ class ExampleCommand(commands.Cog):
         await updated_message.edit(embed=embed)
 
 
-    @commands.command(name='create_voice')
+    '''@commands.command(name='create_voice')
     async def create_voice_channel(self, ctx, channel_name: str, count_users: int):
         guild = ctx.guild
         voice_channel = await guild.create_voice_channel(channel_name, user_limit=count_users)
@@ -81,7 +85,7 @@ class ExampleCommand(commands.Cog):
             print('В канале все еще кто-то есть')
         else:
             await voice_channel.delete()
-            print('Канал удален')
+            print('Канал удален')'''
 
 
     @commands.command(name='top')

@@ -52,8 +52,12 @@ class OnMessageCog(commands.Cog):
             user_id = message.author.id
             is_instance = db.select_user(int(user_id))
             if not is_instance:
-                db.insert_user(int(user_id), str(username), 0, 0)
-            count_points = len(message.content) // 10
+                db.insert_user(int(user_id), str(username), 0, 0, 0)
+            user_symbols = db.select_symbols(int(user_id))[5]
+            db.update_symbols(user_id, length_message + int(user_symbols))
+            print(user_symbols)
+            count_points = (length_message + int(user_symbols)) // 10
+            print(count_points)
             user_points = db.select_user(user_id)[3]
             db.update_points(user_id, user_points+count_points)
             user_points = user_points+count_points
@@ -90,23 +94,30 @@ class OnMessageCog(commands.Cog):
     async def on_reaction_add(self, reaction, user):
         if user.bot:
             return
-        if str(reaction.emoji) == '✅':
+        if str(reaction.emoji) == '<:stonk:1112096772190392320>':
             guild = reaction.message.guild
             role = discord.utils.get(guild.roles, name='Готов')
             if role:
                 await user.add_roles(role)
             else:
                 print('Такой роли не существует')
-        elif str(reaction.emoji) == '🚫':
+        elif str(reaction.emoji) == '<:notstonk:1112096776292413571>':
             guild = reaction.message.guild
             role = discord.utils.get(guild.roles, name='Не готов')
             if role:
                 await user.add_roles(role)
             else:
                 print('Такой роли не существует')
-        elif str(reaction.emoji) == '⚠️':
+        elif str(reaction.emoji) == '<:thonk:1112096769648631839>':
             guild = reaction.message.guild
             role = discord.utils.get(guild.roles, name='Сомневающийся')
+            if role:
+                await user.add_roles(role)
+            else:
+                print('Такой роли не существует')
+        elif str(reaction.emoji) == '🕓':
+            guild = reaction.message.guild
+            role = discord.utils.get(guild.roles, name='Ждать позже')
             if role:
                 await user.add_roles(role)
             else:
@@ -118,11 +129,45 @@ class OnMessageCog(commands.Cog):
                 await user.add_roles(role)
             else:
                 print('Такой роли не существует')
-        elif str(reaction.emoji) == '♻️':
+
+    
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        if user.bot:
+            return
+        if str(reaction.emoji) == '<:stonk:1112096772190392320>':
+            guild = reaction.message.guild
+            role = discord.utils.get(guild.roles, name='Готов')
+            if role:
+                await user.remove_roles(role)
+            else:
+                print('Такой роли не существует')
+        elif str(reaction.emoji) == '<:notstonk:1112096776292413571>':
+            guild = reaction.message.guild
+            role = discord.utils.get(guild.roles, name='Не готов')
+            if role:
+                await user.remove_roles(role)
+            else:
+                print('Такой роли не существует')
+        elif str(reaction.emoji) == '<:thonk:1112096769648631839>':
+            guild = reaction.message.guild
+            role = discord.utils.get(guild.roles, name='Сомневающийся')
+            if role:
+                await user.remove_roles(role)
+            else:
+                print('Такой роли не существует')
+        elif str(reaction.emoji) == '🕓':
             guild = reaction.message.guild
             role = discord.utils.get(guild.roles, name='Ждать позже')
             if role:
-                await user.add_roles(role)
+                await user.remove_roles(role)
+            else:
+                print('Такой роли не существует')
+        elif str(reaction.emoji) == '❌':
+            guild = reaction.message.guild
+            role = discord.utils.get(guild.roles, name='Непригоден для ПБ')
+            if role:
+                await user.remove_roles(role)
             else:
                 print('Такой роли не существует')
 

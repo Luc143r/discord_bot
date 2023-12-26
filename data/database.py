@@ -22,12 +22,13 @@ class Database:
                 user_id INTEGER NOT NULL,
                 username TEXT NOT NULL,
                 points INTEGER NOT NULL,
-                time_voice INTEGER NOT NULL
+                time_voice INTEGER NOT NULL,
+                symbols INTEGER NOT NULL
             )
         ''')
 
     @db_session
-    def insert_user(self, user_id: int, username: str, points: int, time_voice: int, cursor: Cursor):
+    def insert_user(self, user_id: int, username: str, points: int, time_voice: int, symbols: int, cursor: Cursor):
         cursor.execute('SELECT * FROM Users WHERE user_id = ?', (user_id,))
         user = cursor.fetchone()
         if user:
@@ -35,7 +36,7 @@ class Database:
             return
         else:
             print('Добавил нового юзера')
-            cursor.execute('INSERT INTO Users (user_id, username, points, time_voice) VALUES (?, ?, ?, ?)', (user_id, username, points, time_voice,))
+            cursor.execute('INSERT INTO Users (user_id, username, points, time_voice, symbols) VALUES (?, ?, ?, ?, ?)', (user_id, username, points, time_voice, symbols,))
 
     @db_session
     def select_user(self, user_id: int, cursor: Cursor):
@@ -61,3 +62,14 @@ class Database:
     def edit_user_points(self, username: str, points: int, cursor: Cursor):
         cursor.execute('UPDATE Users SET points = ? WHERE username = ?', (points, username,))
 
+
+    @db_session
+    def select_symbols(self, user_id: int, cursor: Cursor):
+        cursor.execute('SELECT * FROM Users WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        return result
+
+
+    @db_session
+    def update_symbols(self, user_id: int, symbols: int, cursor: Cursor):
+        cursor.execute('UPDATE Users SET symbols = ? WHERE user_id = ?', (symbols, user_id,))
