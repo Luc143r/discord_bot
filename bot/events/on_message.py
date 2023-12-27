@@ -21,18 +21,16 @@ class OnMessageCog(commands.Cog):
                     total_time = (discord.utils.utcnow() - self.user_voice_times[member.id]).total_seconds()
                     if int(total_time) >= 60:
                         total_time = total_time // 60
-                        await member.send(f'Вы провели в голосовом канале {total_time} минут')
+                        #await member.send(f'Вы провели в голосовом канале {total_time} минут')
                         points_time = total_time // 5
                     else:
-                        await member.send(f'Вы провели в голосовом канале {total_time} секунд')
+                        #await member.send(f'Вы провели в голосовом канале {total_time} секунд')
                         total_time = 0
                         points_time = 0
-                    # username = member
                     user_id = member.id
-                    del self.user_voice_times[member.id]
                     is_instance = db.select_user(int(user_id))
                     if not is_instance:
-                        db.insert_user(int(user_id), str(member), 0, 0)
+                        db.insert_user(int(user_id), str(member), 0, 0, 0)
                     user_points = db.select_user(int(user_id))[3]
                     user_times = db.select_user(int(user_id))[4]
                     db.update_points(user_id, user_points+points_time)

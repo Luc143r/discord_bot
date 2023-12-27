@@ -33,11 +33,10 @@ class ExampleCommand(commands.Cog):
         roles = ['Готов', 'Не готов', 'Сомневающийся', 'Ждать позже']
         reaction_emoji = ['<:stonk:1112096772190392320>', '<:notstonk:1112096776292413571>', '<:thonk:1112096769648631839>', '🕓']
         for name_role in range(len(roles)):
-            reaction_users = await self.get_reaction_users(message_embed, reaction_emoji[name_role])
-            print(reaction_emoji)
+            reaction_users = await self.get_reaction_users(message_embed, message_embed.reactions[name_role].emoji)
+            print(reaction_users)
             guild = message_embed.guild
             role = discord.utils.get(guild.roles, name=roles[name_role])
-            print(f"role befor remove: {role}")
             if role:
                 print(f"role after remove: {role}")
                 for user_id in reaction_users:
@@ -55,7 +54,9 @@ class ExampleCommand(commands.Cog):
     async def get_reaction_users(self, message_embed, reaction_emoji: str):
         updated_message = await message_embed.channel.fetch_message(message_embed.id)
         reaction_users = set()
-        reaction = discord.utils.get(message_embed.reactions, emoji=reaction_emoji)
+        reaction = discord.utils.get(updated_message.reactions, emoji=reaction_emoji)
+        print(reaction)
+        #print(updated_message.reactions)
         if reaction:
             async for user in reaction.users():
                 if user.id != self.bot.user.id:
