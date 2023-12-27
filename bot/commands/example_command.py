@@ -95,10 +95,16 @@ class ExampleCommand(commands.Cog):
         user_id = ctx.message.author.id
         top_list = []
         for user in range(len(top_users)):
-            top_list.append(f'{user+1}. {top_users[user][0]} - {top_users[user][1]} points')
-        #print('\n'.join(top_list))
+            top_list.append(f'**{user+1}. {top_users[user][0]}**{top_users[user][1]} HP')
         top_list = '\n'.join(top_list)
-        await ctx.message.reply(top_list)
+        embed = discord.Embed(
+            title='**Топ HP**',
+            description=top_list,
+            color=discord.Color.random()
+        )
+        embed.set_footer(text='Prod by Luc143r || 🖤 || @insearchofmyself666')
+        await ctx.message.delete()
+        self.message_embed = await ctx.send(embed=embed)
 
 
     @commands.command(name='edit_points')
